@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): string
+    public function index(Request $request)
     {
-        return PostsController::class;
+        $posts = Post::all();
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -19,7 +22,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -27,23 +30,31 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post = new Post;
+        $post->title = $request->input('title');
+        $post->body = null;
+        $post->user_id = '01970d51-b6b6-73bf-b452-6f3a2460ecdf';
+        $post->save();
+
+        return redirect('/posts');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id):string
+    public function show(string $id)
     {
-        return "This is the show method at id:";
+        $posts = Post::findOrFail($id);
+        return view('posts.show', compact('posts'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -51,7 +62,10 @@ class PostsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $post->title = $request->input('title');
+        $post->update();
+        return redirect('/posts');
     }
 
     /**
@@ -59,7 +73,8 @@ class PostsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $post = Post::whereId($id)->delete();
+        return redirect('/posts');
     }
 
     public function contact():string
@@ -71,9 +86,6 @@ class PostsController extends Controller
 
     public function show_posts($id, $name):string
     {
-        # return view('posts')->with('id',$id);
-
         return view('posts', compact('id', 'name'));
-
     }
 }
